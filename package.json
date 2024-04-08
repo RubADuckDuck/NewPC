@@ -1,0 +1,23 @@
+{
+  "name": "webmini",
+  "version": "1.0.0",
+  "description": "have fun",
+  "main": "index.js",
+  "scripts": {
+    "test": "whatisthis"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RubADuckDuck/PrivateChat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RubADuckDuck/PrivateChat/issues"
+  },
+  "homepage": "https://github.com/RubADuckDuck/PrivateChat#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.16.0"
+  }
+}
