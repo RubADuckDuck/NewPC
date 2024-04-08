@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #users { margin-bottom: 20px; cursor: pointer; }
+        #users li { margin-bottom: 5px; }
+        #message { width: 300px; height: 100px; margin-bottom: 10px; }
+        #chat { border: 1px solid #000; padding: 10px; height: 200px; overflow-y: scroll; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Connected Users</h2>
+    <ul id="users"></ul>
+    
+    <div id="chat"></div>
+
+    <textarea id="message" placeholder="Type a message here..."></textarea><br>
+    <button onclick="sendMessage()">Send Message</button>
+    
+    <script>
+        const ws = new WebSocket('ws://localhost:3000');
+        const usersList = document.getElementById('users');
+        const messageInput = document.getElementById('message');
+        const chatWindow = document.getElementById('chat');
+
+        let selectedUserId = null;
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'users') {
+                usersList.innerHTML = '';
+                data.data.forEach(userId => {
+                    const li = document.createElement('li');
+                    li.textContent = `User ${userId}`;
+                    li.onclick = () => selectUser(userId);
+                    usersList.appendChild(li);
+                });
+            } else if (data.type === 'chat') {
+                const messageElement = document.createElement('p');
+                const sender = data.fromUserId ? `User ${data.fromUserId}: ` : 'You: ';
+                messageElement.textContent = sender + data.data;
+                chatWindow.appendChild(messageElement);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        };
+
+        function sendMessage() {
+            const message = messageInput.value;
+            const messageType = selectedUserId ? 'private' : 'chat';
+            ws.send(JSON.stringify({ type: messageType, data: message, toUserId: selectedUserId }));
+            messageInput.value = '';
+            selectedUserId = null; // Reset selected user after sending a message
+        }
+
+        function selectUser(userId) {
+            selectedUserId = userId;
+            console.log(`Selected user ${userId} for private messaging.`);
+        }
+    </script>
+</body>
+</html>
